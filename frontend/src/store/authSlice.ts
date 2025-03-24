@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 // Axios instance with cookie support
 const api = axios.create({
-    baseURL: 'http://localhost:5000/api',  // Replace with your .NET Core API base URL
+    baseURL: 'http://localhost:5280/api',  // Replace with your .NET Core API base URL
     withCredentials: true  // Enable cookies in requests
 });
 
@@ -25,8 +26,8 @@ interface AuthState {
 // Initial state
 const initialState: AuthState = {
     user: null,
-    accessToken: localStorage.getItem("accessToken") || null,
-    isAuthenticated: !!localStorage.getItem("accessToken"),
+    accessToken: Cookies.get("AccessToken") || null,
+    isAuthenticated: !!Cookies.get("AccessToken"),
     loading: false,
     error: null
 };
@@ -37,9 +38,9 @@ export const loginUser = createAsyncThunk(
     async ({ username, password }: { username: string; password: string }, { rejectWithValue }) => {
         try {
             const response = await api.post('/auth/login', { username, password });
-            localStorage.setItem("accessToken", response.data.accessToken);
             return response.data.accessToken;
-        } catch (error: any) {
+        }
+        catch (error: any) {
             return rejectWithValue(error.response?.data?.message || "Login failed");
         }
     }
@@ -52,11 +53,11 @@ export const fetchUserDetails = createAsyncThunk(
         try {
             const state = getState() as { auth: AuthState };
             const token = state.auth.accessToken;
-            
+
             const response = await api.get('/auth/MyDetails', {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            
+
             return response.data.user as User;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || "Failed to fetch user details");
@@ -71,13 +72,13 @@ const authSlice = createSlice({
         setAccessToken: (state, action: PayloadAction<string>) => {
             state.accessToken = action.payload;
             state.isAuthenticated = true;
-            localStorage.setItem("accessToken", action.payload);
+            Cookies.set("AccessToken", action.payload);
         },
         logout: (state) => {
             state.user = null;
             state.accessToken = null;
             state.isAuthenticated = false;
-            localStorage.removeItem("accessToken");
+            Cookies.remove("AccessToken");
         }
     },
     extraReducers: (builder) => {

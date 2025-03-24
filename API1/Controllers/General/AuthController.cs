@@ -2,6 +2,7 @@
 using API1.Interface;
 using API1.Model;
 using API1.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -20,7 +21,7 @@ namespace API1.Controllers.General
             _authService = authService;
         }
 
-        // ✅ Method to store refresh token in cookies
+        // Method to store refresh token in cookies
         private void SetRefreshTokenCookie(string refreshToken)
         {
             var cookieOptions = new CookieOptions
@@ -34,6 +35,7 @@ namespace API1.Controllers.General
             Response.Cookies.Append("RefreshToken", refreshToken, cookieOptions);
         }
 
+
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
@@ -41,8 +43,9 @@ namespace API1.Controllers.General
             if (authTokenInstance == null)
                 return Unauthorized(new { message = "Invalid credentials" });
 
-            // ✅ Store only the refresh token in cookies
+            // Store only the refresh token in cookies
             SetRefreshTokenCookie(authTokenInstance.RefreshToken);
+            //SetAccessTokenCookie(authTokenInstance.AccessToken);
 
             return Ok(new
             {
@@ -54,7 +57,7 @@ namespace API1.Controllers.General
         [HttpPost("refresh")]
         public IActionResult RefreshToken()
         {
-            // ✅ Retrieve refresh token from cookie
+            // Retrieve refresh token from cookie
             var refreshToken = Request.Cookies["RefreshToken"];
 
             if (string.IsNullOrEmpty(refreshToken))
@@ -64,7 +67,7 @@ namespace API1.Controllers.General
             if (newTokenInstance == null)
                 return Unauthorized(new { message = "Invalid refresh token" });
 
-            // ✅ Store the new refresh token in cookies
+            // Store the new refresh token in cookies
             SetRefreshTokenCookie(newTokenInstance.RefreshToken);
 
             return Ok(new
@@ -80,5 +83,20 @@ namespace API1.Controllers.General
             return Ok(new { message = "Logged out successfully" });
         }
 
+        [HttpGet("mydetails")]
+        [Authorize]
+        public IActionResult MyDetails()
+        {
+            var accessToken = Request.Cookies["AccessToken"];
+            if (string.IsNullOrEmpty(accessToken))
+                return Unauthorized(new { message = "No access token found!" });
+
+            var username = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized(new { message = "No user logged in!" });
+
+            var user = _userService.GetUserByUsername(username);
+            return Ok(new { user });
+        }
     }
-}
+    }

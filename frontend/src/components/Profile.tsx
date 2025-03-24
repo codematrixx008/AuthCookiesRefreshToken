@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
+import Cookies from "js-cookie";
 
 const API_URL = "http://localhost:5280/api/Auth";
 
@@ -11,24 +12,15 @@ const Profile = () => {
     const accessToken = useSelector((state: RootState) => state.auth.accessToken);
 
 
-    useEffect(() => {
-        if (!localStorage.getItem("AccessToken")) {
-            navigate("/login");
-        }
-    }, [navigate]);
-    console.log("accessToken", accessToken);
-
-
-
-
     const handleLogout = async () => {
         try {
             await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
-
-            document.cookie = "RefreshToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-            localStorage.removeItem("AccessToken");
+            // document.cookie = "RefreshToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 UTC;";
             navigate("/login");
-        } catch (error) {
+            Cookies.remove("AccessToken");
+            Cookies.remove("RefreshToken");
+        }
+        catch (error) {
             console.error("Logout failed", error);
         }
     };
@@ -50,7 +42,7 @@ const Profile = () => {
             </div>
 
             <div className="text-center mt-3">
-                <div style={{ maxWidth:'100%', wordBreak: 'break-word' }}>
+                <div style={{ maxWidth: '100%', wordBreak: 'break-word' }}>
                     <strong>Access Token:</strong> {accessToken}
                 </div>
             </div>
