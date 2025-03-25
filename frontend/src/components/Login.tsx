@@ -3,7 +3,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAccessToken } from "../store/authSlice";
-import { log } from "console";
 
 const API_BASE_URL = "http://localhost:5280/api/Auth";
 
@@ -36,8 +35,6 @@ const AuthComponent: React.FC = () => {
                 {},
                 { withCredentials: true }
             );
-            // setMessage(response.data.message);
-            console.log("Access Token on Login when refresh and get token", response.data.accessToken);
             dispatch(setAccessToken(response.data.accessToken));
         } catch (error) {
             setMessage("Failed to refresh token");
@@ -62,7 +59,6 @@ const AuthComponent: React.FC = () => {
         }, 5 * 60 * 1000); // Refresh token every 5 minutes
         return () => clearInterval(interval);
     }, []);
-
 
     return (
         <div className="container d-flex justify-content-center align-items-center vh-100">

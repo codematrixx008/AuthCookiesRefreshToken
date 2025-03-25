@@ -35,7 +35,6 @@ namespace API1.Controllers.General
             Response.Cookies.Append("RefreshToken", refreshToken, cookieOptions);
         }
 
-
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
@@ -45,13 +44,8 @@ namespace API1.Controllers.General
 
             // Store only the refresh token in cookies
             SetRefreshTokenCookie(authTokenInstance.RefreshToken);
-            //SetAccessTokenCookie(authTokenInstance.AccessToken);
 
-            return Ok(new
-            {
-                message = "Login successful",
-                //accessToken = authTokenInstance.AccessToken
-            });
+            return Ok(new { message = "Login successful" });
         }
 
         [HttpPost("refresh")]
@@ -76,6 +70,7 @@ namespace API1.Controllers.General
                 accessToken = newTokenInstance.AccessToken
             });
         }
+
         [HttpPost("logout")]
         public IActionResult Logout()
         {
@@ -99,4 +94,4 @@ namespace API1.Controllers.General
             return Ok(new { user });
         }
     }
-    }
+}

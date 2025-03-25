@@ -12,16 +12,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-// ✅ Enable CORS Policy
+// Enable CORS Policy
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: MyAllowSpecificOrigins,
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000")  // 🔥 Allow React frontend
+            policy.WithOrigins("http://localhost:3000")  // Allow React frontend
                   .AllowAnyHeader()
                   .AllowAnyMethod()
-                  .AllowCredentials();  // 🔥 Allow sending cookies & Authorization headers
+                  .AllowCredentials();  // Allow sending cookies & Authorization headers
         });
 });
 
@@ -43,7 +43,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
         };
 
-        // ✅ Enable Cookie-based token validation
+        // Enable Cookie-based token validation
         options.Events = new JwtBearerEvents
         {
             OnMessageReceived = context =>
@@ -100,19 +100,19 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// ✅ Use Cookie Policy Middleware
+// Use Cookie Policy Middleware
 app.UseCookiePolicy(new CookiePolicyOptions
 {
     MinimumSameSitePolicy = SameSiteMode.Strict
 });
 
-// ✅ Use CORS Middleware
+// Use CORS Middleware
 app.UseCors(MyAllowSpecificOrigins);
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();  // ✅ Show detailed errors
+    app.UseDeveloperExceptionPage();  // Show detailed errors
     app.UseSwagger();
     app.UseSwaggerUI();
 }

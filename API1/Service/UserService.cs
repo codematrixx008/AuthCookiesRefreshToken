@@ -17,7 +17,7 @@ namespace API1.Service
         public static readonly Dictionary<string, List<string>> _accessRules = new()
         {
             { "Admin", new List<string> { "Admin" } },
-            { "Reports", new List<string> { "Manager", "Admin" } },
+            { "Reports", new List<string> { "Manager", "Manager","Admin" } },
             { "User", new List<string> { "Admin", "User" } }
         };
 
