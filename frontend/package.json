@@ -14,6 +14,7 @@
     "@types/react-dom": "^19.0.4",
     "axios": "^1.8.4",
     "bootstrap": "^5.0.1",
+    "js-cookie": "^3.0.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-redux": "^9.2.0",
@@ -47,5 +48,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:5250"
+  "proxy": "http://localhost:5250",
+  "devDependencies": {
+    "@types/js-cookie": "^3.0.6"
+  }
 }
